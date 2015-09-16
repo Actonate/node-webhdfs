@@ -20,6 +20,7 @@
     }
   ],
   "dependencies": {
+    "q": "^1.4.1",
     "request": "^2.45.0",
     "underscore": "^1.7.0"
   },

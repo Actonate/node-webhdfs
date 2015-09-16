@@ -1,10 +1,11 @@
 var querystring = require('querystring'),
     request = require('request'),
     _ = require('underscore'),
-    RemoteException = exports.RemoteException = require('./remoteexception.js');
+    RemoteException = exports.RemoteException = require('./remoteexception.js'),
+    q = require('q');
 
 
-var WebHDFSClient = exports.WebHDFSClient = function (options) {
+var BasicWebHDFSClient = exports.BasicWebHDFSClient = function (options) {
     
     // save specified options
     this.options = _.defaults(options || {}, {
@@ -23,7 +24,7 @@ var WebHDFSClient = exports.WebHDFSClient = function (options) {
 
 
 // ref: http://hadoop.apache.org/common/docs/r1.0.2/webhdfs.html#DELETE
-WebHDFSClient.prototype.del = function (path, hdfsoptions, requestoptions, callback) {
+BasicWebHDFSClient.prototype.del = function (path, hdfsoptions, requestoptions, callback) {
     
     // requestoptions may be omitted
     if (callback === undefined && typeof(requestoptions) === 'function') {
@@ -71,7 +72,7 @@ WebHDFSClient.prototype.del = function (path, hdfsoptions, requestoptions, callb
 
 
 // ref: http://hadoop.apache.org/common/docs/r1.0.2/webhdfs.html#LISTSTATUS
-WebHDFSClient.prototype.listStatus = function (path, hdfsoptions, requestoptions, callback) {
+BasicWebHDFSClient.prototype.listStatus = function (path, hdfsoptions, requestoptions, callback) {
     
     // requestoptions may be omitted
     if (callback === undefined && typeof(requestoptions) === 'function') {
@@ -113,11 +114,11 @@ WebHDFSClient.prototype.listStatus = function (path, hdfsoptions, requestoptions
         
     })
     
-}
+};
 
 
 // ref: http://hadoop.apache.org/common/docs/r1.0.2/webhdfs.html#GETFILESTATUS
-WebHDFSClient.prototype.getFileStatus = function (path, hdfsoptions, requestoptions, callback) {
+BasicWebHDFSClient.prototype.getFileStatus = function (path, hdfsoptions, requestoptions, callback) {
     
     // requestoptions may be omitted
     if (callback === undefined && typeof(requestoptions) === 'function') {
@@ -164,7 +165,7 @@ WebHDFSClient.prototype.getFileStatus = function (path, hdfsoptions, requestopti
 
 
 // ref: http://hadoop.apache.org/common/docs/r1.0.2/webhdfs.html#GETCONTENTSUMMARY
-WebHDFSClient.prototype.getContentSummary = function (path, hdfsoptions, requestoptions, callback) {
+BasicWebHDFSClient.prototype.getContentSummary = function (path, hdfsoptions, requestoptions, callback) {
     
     // requestoptions may be omitted
     if (callback === undefined && typeof(requestoptions) === 'function') {
@@ -210,7 +211,7 @@ WebHDFSClient.prototype.getContentSummary = function (path, hdfsoptions, request
 
 
 // ref: http://hadoop.apache.org/common/docs/r1.0.2/webhdfs.html#GETFILECHECKSUM
-WebHDFSClient.prototype.getFileChecksum = function (path, hdfsoptions, requestoptions, callback) {
+BasicWebHDFSClient.prototype.getFileChecksum = function (path, hdfsoptions, requestoptions, callback) {
     
     // requestoptions may be omitted
     if (callback === undefined && typeof(requestoptions) === 'function') {
@@ -256,7 +257,7 @@ WebHDFSClient.prototype.getFileChecksum = function (path, hdfsoptions, requestop
 
 
 // ref: http://hadoop.apache.org/common/docs/r1.0.2/webhdfs.html#GETHOMEDIRECTORY
-WebHDFSClient.prototype.getHomeDirectory = function (hdfsoptions, requestoptions, callback) {
+BasicWebHDFSClient.prototype.getHomeDirectory = function (hdfsoptions, requestoptions, callback) {
     
     // requestoptions may be omitted
     if (callback === undefined && typeof(requestoptions) === 'function') {
@@ -299,7 +300,7 @@ WebHDFSClient.prototype.getHomeDirectory = function (hdfsoptions, requestoptions
 
 
 // ref: http://hadoop.apache.org/common/docs/r1.0.2/webhdfs.html#OPEN
-WebHDFSClient.prototype.open = function (path, hdfsoptions, requestoptions, callback) {
+BasicWebHDFSClient.prototype.open = function (path, hdfsoptions, requestoptions, callback) {
     
     // requestoptions may be omitted
     if (callback === undefined && typeof(requestoptions) === 'function') {
@@ -340,7 +341,7 @@ WebHDFSClient.prototype.open = function (path, hdfsoptions, requestoptions, call
 
 
 // ref: http://hadoop.apache.org/common/docs/r1.0.2/webhdfs.html#RENAME
-WebHDFSClient.prototype.rename = function (path, destination, hdfsoptions, requestoptions, callback) {
+BasicWebHDFSClient.prototype.rename = function (path, destination, hdfsoptions, requestoptions, callback) {
     
     // requestoptions may be omitted
     if (callback === undefined && typeof(requestoptions) === 'function') {
@@ -389,7 +390,7 @@ WebHDFSClient.prototype.rename = function (path, destination, hdfsoptions, reque
 
 
 // ref: http://hadoop.apache.org/common/docs/r1.0.2/webhdfs.html#MKDIRS
-WebHDFSClient.prototype.mkdirs = function (path, hdfsoptions, requestoptions, callback) {
+BasicWebHDFSClient.prototype.mkdirs = function (path, hdfsoptions, requestoptions, callback) {
     
     // requestoptions may be omitted
     if (callback === undefined && typeof(requestoptions) === 'function') {
@@ -437,7 +438,7 @@ WebHDFSClient.prototype.mkdirs = function (path, hdfsoptions, requestoptions, ca
 
 
 // ref: http://hadoop.apache.org/common/docs/r1.0.2/webhdfs.html#APPEND
-WebHDFSClient.prototype.append = function (path, data, hdfsoptions, requestoptions, callback) {
+BasicWebHDFSClient.prototype.append = function (path, data, hdfsoptions, requestoptions, callback) {
     
     // requestoptions may be omitted
     if (callback === undefined && typeof(requestoptions) === 'function') {
@@ -516,7 +517,7 @@ WebHDFSClient.prototype.append = function (path, data, hdfsoptions, requestoptio
 
 
 // ref: http://hadoop.apache.org/common/docs/r1.0.2/webhdfs.html#CREATE
-WebHDFSClient.prototype.create = function (path, data, hdfsoptions, requestoptions, callback) {
+BasicWebHDFSClient.prototype.create = function (path, data, hdfsoptions, requestoptions, callback) {
     
     // requestoptions may be omitted
     if (callback === undefined && typeof(requestoptions) === 'function') {
